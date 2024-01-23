@@ -16,14 +16,14 @@ resultado = pd.DataFrame({
     'ESTATUS': []
     })
 # configurar la conexión a Oracle
-servidor = '192.168.2.6'
-puerto = 1521
-identificador = 'escolar'
+servidor = '999.999.999.999'
+puerto = 9999
+identificador = 'xxxxxxxx'
 usuario = input('Usuario: ')
 contrasena = input('Password: ')
 midsn = cx_Oracle.makedsn(host = servidor, port = puerto, sid = identificador)
 # leer el archivo con los datos
-datos = pd.read_excel('BECADOS JEF ESTATUS ACTUAL 2024.xlsx')
+datos = pd.read_excel('archivo_origen.xlsx')
 # obtener las matrículas a consultar
 matriculas = datos['MATRICULA']
 # fijar el ciclo de la consulta
@@ -52,6 +52,6 @@ for d in matriculas:
 # quitar el índice a los resultados
 resultado = resultado.set_index('NO')
 # guardar los resultados en un nuevo archivo formato xslx
-archivo = pd.ExcelWriter('Estatus alumnos becados 202401.xlsx')
+archivo = pd.ExcelWriter('archivo_salida.xlsx')
 resultado.to_excel(archivo,'becados')
 archivo.close()
