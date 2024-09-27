@@ -3,16 +3,18 @@
 Creado 08/06/2022 14:03
 @author: Carlos Ernesto Custodio Cadena
 Cálcular informe DGESU con archivos csv
-Última revisión: 23/06/2023
+Última revisión: 09/07/2024
 """
 import pandas as pd
 #  Se leen todos los origenes de datos del informe Junta Directiva y DGESU
 dinscrito = pd.read_csv("dato/inscrito.csv", encoding="unicode escape", index_col = False)
+origen = "dato/"
+destino = "DGESU/"
+nombre = "DGESU_20242T"
 #  CIERRE solo alumnos vigentes, APERTURA todos los que se inscribieron inicialmente
-#  para el informe DGESU y 911 la matricula de interés es la de CIERRE para los
-#  informes de la JD en ocasiones es de interés la matrícula de APERTURA
+#  para el informe DGESU la matricula de interés es la de CIERRE
 dinscrito = dinscrito[dinscrito["MATRICULADE"]=="CIERRE"]
-dadmision = pd.read_csv("dato/admision.csv", encoding="unicode escape", index_col = False)
+dadmision = pd.read_csv(origen + "admision.csv", encoding="unicode escape", index_col = False)
 #  Se ordenan los DataFrames obtenidos
 dinscrito = dinscrito.sort_values(
     by=["MODALIDAD", "NIVEL", "SISTEMA", "PROG_EDUC", "GRADO", "SEXO"],
@@ -91,7 +93,6 @@ diprog_educ = crea_idx(iprog_educ)
 #  Se realiza el ciclo para obtener todos los indicadores del ciclo actual
 for p in diprog_educ:
     itemp = dinscrito[dinscrito["PROG_EDUC"] == p]
-    #  itemp = itemp[itemp["MATRICULADE"] == "CIERRE"] #  Evita que se presenten datos de alumnos que se dieron de baja en el informe
     atemp = dadmision[dadmision["PROG_EDUC"] == p]
     #  Contiene información de alumnos de NI ciclo actual
     itempadm = dinscrito[dinscrito["PROG_EDUC"]==p]
@@ -120,11 +121,9 @@ for p in diprog_educ:
             "MTM": matr_m_pe(itemp),
             "MT": matr_t_pe(itemp)}, index=[len(idx_dgesu)])
     idx_dgesu = pd.concat([idx_dgesu, idx_tmp])
-#  Se crea el archivo de Excel para el informe DGESU e informe a la J. D.
-writer = pd.ExcelWriter("DGESU/DGESU_2023_2T.xlsx")
-#  Informe DGESU periodo actual
-idx_dgesu.to_excel(writer, sheet_name="DGESU_2023_2T")
-#  Datos origen de los 911, DGESU e indicadores
+#  Se crea el archivo de Excel para el informe DGESU
+writer = pd.ExcelWriter(destino + nombre + ".xlsx")
+idx_dgesu.to_excel(writer, sheet_name = nombre)
 dinscrito.to_excel(writer, sheet_name="inscrito")
 dadmision.to_excel(writer, sheet_name="admision")
 writer.close()
